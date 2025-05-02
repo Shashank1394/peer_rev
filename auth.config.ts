@@ -1,40 +1,44 @@
-import Google from "next-auth/providers/google";
-import Credentials from "next-auth/providers/credentials";
-import type { NextAuthConfig } from "next-auth";
-import { LoginSchema } from "./schemas";
-import bcrypt from "bcryptjs";
+import authConfigBase from "./auth.config.base";
+import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "./prisma/prisma";
+import bcrypt from "bcryptjs";
+import { LoginSchema } from "./schemas";
+import type { z } from "zod";
+import type { CredentialsConfig } from "next-auth/providers/credentials";
+import type { NextAuthConfig } from "next-auth";
 
-export default {
-  providers: [
-    Google({
-      clientId: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    }),
-    Credentials({
-      async authorize(credentials) {
-        const validatedData = LoginSchema.safeParse(credentials);
+const fullConfig: NextAuthConfig = {
+  ...authConfigBase,
+  adapter: PrismaAdapter(prisma),
+  providers: authConfigBase.providers.map((provider) => {
+    if (
+      typeof provider === "object" &&
+      "name" in provider &&
+      provider.name === "Credentials"
+    ) {
+      // Cast to CredentialsConfig to satisfy TS
+      const credsProvider = provider as CredentialsConfig;
 
-        if (!validatedData.success) return null;
+      return {
+        ...credsProvider,
+        authorize: async (credentialsRaw, req) => {
+          const validated = LoginSchema.safeParse(credentialsRaw);
 
-        const { email, password } = validatedData.data;
-        const user = await prisma.user.findFirst({
-          where: {
-            email: email.toLowerCase(),
-          },
-        });
+          if (!validated.success) return null;
 
-        if (!user || !user.password || !user.email) {
-          return null;
-        }
+          const { email, password } = validated.data;
+          const user = await prisma.user.findFirst({ where: { email } });
 
-        const passwordMatch = await bcrypt.compare(password, user.password);
-        if (passwordMatch) {
-          return user;
-        }
+          if (!user?.password) return null;
 
-        return null;
-      },
-    }),
-  ],
-} satisfies NextAuthConfig;
+          const isValid = await bcrypt.compare(password, user.password);
+          return isValid ? user : null;
+        },
+      };
+    }
+
+    return provider;
+  }),
+};
+
+export default fullConfig;
