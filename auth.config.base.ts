@@ -1,6 +1,6 @@
 import Google from "next-auth/providers/google";
 import Credentials from "next-auth/providers/credentials";
-import type { NextAuthConfig, User } from "next-auth";
+import type { NextAuthConfig } from "next-auth";
 import { LoginSchema } from "./schemas";
 import { getUserById } from "./data/user";
 
