@@ -3,7 +3,6 @@ import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "./prisma/prisma";
 import bcrypt from "bcryptjs";
 import { LoginSchema } from "./schemas";
-import type { z } from "zod";
 import type { CredentialsConfig } from "next-auth/providers/credentials";
 import type { NextAuthConfig } from "next-auth";
 
