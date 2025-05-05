@@ -16,6 +16,7 @@ export async function submitProject(data: z.infer<typeof formSchema>) {
 
   await prisma.project.create({
     data: {
+      name: validated.name,
       title: validated.title,
       description: validated.description,
       githubUrl: validated.githubUrl,

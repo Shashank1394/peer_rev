@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 export const formSchema = z.object({
+  name: z.string(),
   title: z.string().min(3),
   description: z.string().min(10),
   githubUrl: z.string().url(),

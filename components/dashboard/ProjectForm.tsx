@@ -32,6 +32,7 @@ export default function ProjectForm() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      name: "",
       title: "",
       description: "",
       githubUrl: "",
@@ -64,6 +65,20 @@ export default function ProjectForm() {
           className="w-full space-y-6"
         >
           <h2 className="text-2xl font-semibold text-center">Submit Project</h2>
+
+          <FormField
+            control={form.control}
+            name="name"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Name</FormLabel>
+                <FormControl>
+                  <Input placeholder="Student Name" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
           <FormField
             control={form.control}
