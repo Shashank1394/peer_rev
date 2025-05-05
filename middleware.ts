@@ -16,11 +16,17 @@ export default auth(async (req) => {
   const isApiRoute = pathname.startsWith("/api");
   const isAdminRoute = pathname.startsWith("/admin");
   const isPrivateRoute = privateRoutes.includes(pathname);
+  const isHomeRoute = pathname === "/";
 
   if (isApiRoute) return;
 
   // Redirect logged-in users away from login/register pages
   if (isLoggedIn && isAuthRoute) {
+    return Response.redirect(`${url}/dashboard`);
+  }
+
+  // Redirect logged-in users away from home page
+  if (isLoggedIn && isHomeRoute) {
     return Response.redirect(`${url}/dashboard`);
   }
 
