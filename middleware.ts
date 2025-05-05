@@ -15,6 +15,7 @@ export default auth(async (req) => {
   const isAuthRoute = pathname.startsWith("/auth");
   const isApiRoute = pathname.startsWith("/api");
   const isAdminRoute = pathname.startsWith("/admin");
+  const isFacultyRoute = pathname.startsWith("/faculty");
   const isPrivateRoute = privateRoutes.includes(pathname);
   const isHomeRoute = pathname === "/";
 
@@ -35,17 +36,19 @@ export default auth(async (req) => {
     return Response.redirect(`${url}/auth/login`);
   }
 
+  const token = await getToken({ req, secret: process.env.AUTH_SECRET });
+  const role = token?.role;
+
   // Restrict access to admin routes
-  if (isAdminRoute) {
-    const token = await getToken({ req, secret: process.env.AUTH_SECRET });
-    const role = token?.role;
+  if (isAdminRoute && role !== "ADMIN") {
+    console.log("REDIRECTING to /unauthorized");
+    return Response.redirect(`${url}/unauthorized`);
+  }
 
-    console.log("ADMIN CHECK — Current User Role:", role);
-
-    if (role !== "ADMIN") {
-      console.log("REDIRECTING to /unauthorized");
-      return Response.redirect(`${url}/unauthorized`);
-    }
+  // Restrict access to faculty routes
+  if (isFacultyRoute && role === "STUDENT") {
+    console.log("REDIRECTING to /unauthorized");
+    return Response.redirect(`${url}/unauthorized`);
   }
 
   // All logged-in users can access private routes
