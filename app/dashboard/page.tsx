@@ -26,6 +26,9 @@ const Dashboard = async () => {
           </form>
         </div>
       </nav>
+
+      {/* Main Content */}
+      <div className="flex p-8"></div>
     </main>
   );
 };
