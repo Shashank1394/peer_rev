@@ -4,15 +4,7 @@ import { auth } from "@/auth";
 import { prisma } from "@/prisma/prisma";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-
-const formSchema = z.object({
-  title: z.string().min(3),
-  description: z.string().min(10),
-  githubUrl: z.string().url(),
-  reportUrl: z.string().url().optional(),
-  tags: z.string(),
-  visibility: z.enum(["PUBLIC", "PRIVATE"]),
-});
+import { formSchema } from "@/lib/validators/project";
 
 export async function submitProject(data: z.infer<typeof formSchema>) {
   const session = await auth();
@@ -20,14 +12,16 @@ export async function submitProject(data: z.infer<typeof formSchema>) {
 
   if (!userId) throw new Error("User not authenticated");
 
+  const validated = formSchema.parse(data);
+
   await prisma.project.create({
     data: {
-      title: data.title,
-      description: data.description,
-      githubUrl: data.githubUrl,
-      reportUrl: data.reportUrl,
-      tags: data.tags.split(",").map((tag) => tag.trim()),
-      visibility: data.visibility,
+      title: validated.title,
+      description: validated.description,
+      githubUrl: validated.githubUrl,
+      reportUrl: validated.reportUrl,
+      tags: validated.tags.split(",").map((tag) => tag.trim()),
+      visibility: validated.visibility,
       userId: userId,
     },
   });

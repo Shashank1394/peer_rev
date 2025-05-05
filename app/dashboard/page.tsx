@@ -1,4 +1,5 @@
 import { auth, signOut } from "@/auth";
+import ProjectForm from "@/components/dashboard/ProjectForm";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
@@ -28,7 +29,9 @@ const Dashboard = async () => {
       </nav>
 
       {/* Main Content */}
-      <div className="flex p-8"></div>
+      <div className="flex justify-center items-center p-8">
+        <ProjectForm />
+      </div>
     </main>
   );
 };
