@@ -57,7 +57,7 @@ export default function ProjectForm() {
   }
 
   return (
-    <div className="bg-white shadow-md rounded-lg p-8 w-lg mx-auto">
+    <div className="bg-white shadow-md rounded-lg w-lg mx-auto flex justify-center items-center p-8 m-8">
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
