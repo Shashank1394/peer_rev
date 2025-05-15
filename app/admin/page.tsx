@@ -1,10 +1,7 @@
-import { auth } from "@/auth";
 import { prisma } from "@/prisma/prisma";
 import { RoleSelector } from "./role-selector";
 
 export default async function AdminPage() {
-  const session = await auth();
-
   const user = await prisma.user.findMany({
     select: {
       id: true,

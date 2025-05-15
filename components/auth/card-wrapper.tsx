@@ -17,7 +17,6 @@ const CardWrapper = ({
   backButtonLabel,
   backButtonHref,
   title,
-  showScocial,
 }: CardWrapperProps) => {
   return (
     <Card className="w-[500px] shadow-md">
